@@ -1,14 +1,18 @@
 #include <iostream>
 #include <string>
+#include <cmath>
 
 struct IndexPair
 {
     int row_index;
     int col_index;
 
+    IndexPair() = default;
+    IndexPair(int r, int c) : row_index(r), col_index(c) {};
+
     bool operator!=(const IndexPair& rhs) const
     {
-        if (this->row_index != rhs.row_index && this->col_index != rhs.col_index)
+        if (this->row_index != rhs.row_index || this->col_index != rhs.col_index)
         {
             return true;
         }
@@ -16,7 +20,6 @@ struct IndexPair
         {
             return false;
         }
-        
     }
 };
 
@@ -28,7 +31,7 @@ void print_board(const int (&board)[9][9])
     {
         if (i % 3 == 0 && i != 0)
         {
-            std::cout << "--------------" << std::endl;
+            std::cout << "--------------------" << std::endl;
         }
         for (size_t j = 0; j != cols; ++j)
         {
@@ -48,7 +51,7 @@ void print_board(const int (&board)[9][9])
     }
 }
 
-IndexPair find_empty(const int (&board)[9][9])
+IndexPair* find_empty(int (&board)[9][9])
 {
     int rows = sizeof(board) / sizeof(board[0]);
     int cols = sizeof(board[0]) / sizeof(int);
@@ -58,13 +61,14 @@ IndexPair find_empty(const int (&board)[9][9])
         {
             if (board[i][j] == 0)
             {
-                return {i, j};
+                return new IndexPair(i, j);
             }
         }
     }
+    return nullptr;
 }
 
-bool is_valid(const int (&board)[9][9], int number, IndexPair position)
+bool is_valid(const int (&board)[9][9], int number, const IndexPair& position)
 {
     int rows = sizeof(board) / sizeof(board[0]);
     int cols = sizeof(board[0]) / sizeof(int);
@@ -97,7 +101,9 @@ bool is_valid(const int (&board)[9][9], int number, IndexPair position)
     {
         for (size_t j = box_x * 3; j != box_x * 3 + 3; ++j)
         {
-            if (board[i][j] == number && position != pair)
+            pair.row_index = i;
+            pair.col_index = j;
+            if (board[i][j] == number && pair != position)
             {
                 return false;
             }
@@ -105,6 +111,37 @@ bool is_valid(const int (&board)[9][9], int number, IndexPair position)
     }
 
     return true;
+}
+
+bool solve_board(int (&board)[9][9])
+{
+    IndexPair* pair = find_empty(board);
+    int row, col;
+    
+    if (pair == nullptr)
+    {
+        return true;
+    }
+    else
+    {
+        row = pair->row_index;
+        col = pair->col_index;
+    }
+
+    // Attempt to insert number into empty position
+    for (int num = 1; num <= 9; num++)
+    {
+        if (is_valid(board, num, *pair))
+        {
+            board[row][col] = num;
+            if (solve_board(board))
+            {
+                return true;
+            }
+            board[row][col] = 0;
+        }
+    }
+    return false;
 }
 
 int main()
@@ -120,5 +157,10 @@ int main()
         {1, 2, 0, 0, 0, 7, 4, 0, 0},
         {0, 4, 9, 2, 0, 6, 0, 0, 7}
     };
+
+
+    print_board(board);
+    solve_board(board);
+    std::cout << "_____________________________AFTER___________________________" << std::endl;
     print_board(board);
 }
