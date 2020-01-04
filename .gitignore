@@ -1,3 +1,6 @@
-.o
-sudoku-solver
+*.o
+*.pro.user
+.qmake.stash
+sudoku-backtracking-solver
 /.vscode
+Makefile
