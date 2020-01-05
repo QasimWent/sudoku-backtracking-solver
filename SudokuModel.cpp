@@ -25,6 +25,10 @@ QVariant SudokuModel::data(const QModelIndex& index, int role) const
     switch (role)
     {
         case Qt::DisplayRole:
+            if (m_board[row][col] == 0)
+            {
+                return "";
+            }
             return m_board[row][col];
         case Qt::BackgroundRole:
             if (m_board[row][col] != 0)
