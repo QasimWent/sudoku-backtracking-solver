@@ -1,6 +1,6 @@
 #include "SudokuModel.h"
 #include <QBrush>
-
+#include <QThread>
 
 SudokuModel::SudokuModel(QObject* parent) : QAbstractTableModel(parent)
 {
@@ -146,6 +146,7 @@ bool SudokuModel::solve()
         if (isValid(num, *pair))
         {
             m_board[row][col] = num;
+            QThread::msleep(200);
             if (solve())
             {
                 return true;

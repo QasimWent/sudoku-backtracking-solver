@@ -1,7 +1,7 @@
 #include <QTableView>
 #include <QPushButton>
 #include "MainWindow.h"
-#include "SudokuModel.h"
+//#include "SudokuModel.h"
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
@@ -9,12 +9,13 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
     QHBoxLayout* hbox = new QHBoxLayout();
 
     tableView = new QTableView(this);
-    QAbstractTableModel* myModel = new SudokuModel(this);
+    myModel = new SudokuModel(this);
     tableView->setModel(myModel);
     tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     tableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     QPushButton* solveBtn = new QPushButton("Solve", this);
+    connect(solveBtn, SIGNAL (clicked()), this, SLOT (handleButton()));
 
     hbox->addWidget(solveBtn, 1, Qt::AlignRight);
 
@@ -23,4 +24,9 @@ MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
     vbox->addLayout(hbox);
 
     setLayout(vbox);
+}
+
+void MainWindow::handleButton()
+{
+    myModel->changeTable();
 }
