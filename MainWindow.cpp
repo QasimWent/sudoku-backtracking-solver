@@ -1,7 +1,6 @@
 #include <QTableView>
 #include <QPushButton>
 #include "MainWindow.h"
-//#include "SudokuModel.h"
 
 MainWindow::MainWindow(QWidget* parent) : QWidget(parent)
 {
