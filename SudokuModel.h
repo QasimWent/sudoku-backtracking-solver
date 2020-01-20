@@ -39,5 +39,6 @@ private:
 
     IndexPair* findEmpty();
     bool isValid(int number, const IndexPair& position);
+    void delay(int millisecondsWait);
     bool solve();
 };

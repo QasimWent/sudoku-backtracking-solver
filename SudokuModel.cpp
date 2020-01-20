@@ -1,5 +1,7 @@
 #include "SudokuModel.h"
 #include <QBrush>
+#include <QEventLoop>
+#include <QTimer>
 
 SudokuModel::SudokuModel(QObject* parent) : QAbstractTableModel(parent)
 {
@@ -124,9 +126,20 @@ bool SudokuModel::isValid(int number, const IndexPair& position)
     return true;
 }
 
+void SudokuModel::delay(int millisecondsWait)
+{
+    QEventLoop loop;
+    QTimer t;
+    t.connect(&t, &QTimer::timeout, &loop, &QEventLoop::quit);
+    t.start(millisecondsWait);
+    loop.exec();
+}
+
 bool SudokuModel::solve()
 {
     IndexPair* pair = findEmpty();
+    QModelIndex topLeft = createIndex(0,0);
+    QModelIndex bottomRight = createIndex(9, 9);
     int row, col;
     
     if (pair == nullptr)
@@ -143,14 +156,17 @@ bool SudokuModel::solve()
     // Attempt to insert number into empty position
     for (int num = 1; num <= 9; num++)
     {
+        delay(100);
         if (isValid(num, *pair))
         {
             m_board[row][col] = num;
+            emit dataChanged(topLeft, bottomRight, {Qt::DisplayRole});
             if (solve())
             {
                 return true;
             }
             m_board[row][col] = 0;
+            emit dataChanged(topLeft, bottomRight, {Qt::DisplayRole});
         }
     }
     delete pair;
@@ -160,7 +176,4 @@ bool SudokuModel::solve()
 void SudokuModel::changeTable()
 {
     solve();
-    QModelIndex topLeft = createIndex(0,0);
-    QModelIndex bottomRight = createIndex(9, 9);
-    emit dataChanged(topLeft, bottomRight, {Qt::DisplayRole});
 }
