@@ -1,6 +1,8 @@
 #include "SudokuModel.h"
 #include <QBrush>
+#include <QColor>
 #include <QEventLoop>
+#include <QFont>
 #include <QTimer>
 
 SudokuModel::SudokuModel(QObject* parent) : QAbstractTableModel(parent)
@@ -23,6 +25,7 @@ QVariant SudokuModel::data(const QModelIndex& index, int role) const
     int row = index.row();
     int col = index.column();
 
+    QFont font;
     switch (role)
     {
         case Qt::DisplayRole:
@@ -34,9 +37,17 @@ QVariant SudokuModel::data(const QModelIndex& index, int role) const
         case Qt::BackgroundRole:
             if (m_board[row][col] != 0)
             {
-               return QBrush(Qt::gray);
+               return QBrush(QColor(210, 180, 140));
             }
             break;
+        case Qt::FontRole:
+            font.setPixelSize(28);
+            return font;
+            break;
+        case Qt::ForegroundRole:
+            return QBrush(Qt::white);
+        case Qt::TextAlignmentRole:
+            return Qt::AlignCenter;
     }
     return QVariant();
 }
@@ -45,7 +56,13 @@ bool SudokuModel::setData(const QModelIndex& index, const QVariant& value, int r
 {
     if (role == Qt::EditRole)
     {
-        m_board[index.row()][index.column()] = value.toInt();
+        
+        if (value.toInt() == sol_m_board[index.row()][index.column()])
+        {
+            m_board[index.row()][index.column()] = value.toInt();
+        }
+        
+        /*
         QString result;
 	    for(int row= 0; row < ROWS; row++)
 	    {
@@ -54,6 +71,7 @@ bool SudokuModel::setData(const QModelIndex& index, const QVariant& value, int r
 	            result += m_board[row][col] + " ";
 	        }
         }
+        */
     }
     return true;
 }
