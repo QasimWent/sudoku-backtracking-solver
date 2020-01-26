@@ -1,5 +1,6 @@
 *.o
 *.pro.user
+moc*
 .qmake.stash
 sudoku-backtracking-solver
 /.vscode
